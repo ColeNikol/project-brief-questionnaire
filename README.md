@@ -3,30 +3,18 @@ Project Brief Questionnaire is a fillable web form template for developers, free
 The entire application runs fully in the browser, requires no backend, and uses a 100% free open-source stack.
 
 Features
-
-Client information form (name, email, company, phone)
-
-Project description and requirements
-
-Platform selection (Web, Mobile, Desktop, PWA or any other)
-
-Feature/module checklist
-
-Extras and add-ons selection
-
-Dynamic project estimate snapshot: estimated price, project complexity, timeframe
-
-Interactive color palette builder
-
-Reference image upload manager
-
-Additional notes / timeline / budget section
-
-Automatic PDF export
-
-Responsive UI built with Tailwind CSS
-
-Works completely offline after loading
+- Client information form (name, email, company, phone)
+- Project description and requirements
+- Platform selection (Web, Mobile, Desktop, PWA or any other)
+- Feature/module requirements checklist
+- Extras and add-ons selection
+- Dynamic project estimate snapshot: estimated price, project complexity, timeframe
+- Interactive color palette builder
+- Reference images upload manager
+- Additional notes / timeline / budget section
+- Automatic PDF export
+- Responsive UI built with Tailwind CSS
+- Works completely offline after loading
 
 Tech Stack used:
 
