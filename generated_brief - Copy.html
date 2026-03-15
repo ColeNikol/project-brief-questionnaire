@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project brief · Multi-page A4 PDF with colors</title>
+    <!-- Tailwind + Font Awesome -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- html2canvas + jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* ensure all inputs have placeholders, and pdf will render them as static text via cloning */
+        input, textarea {
+            line-height: 1.5 !important;
+            padding: 0.75rem !important;
+            white-space: normal !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            height: auto !important;
+            min-height: 3rem;
+            box-sizing: border-box !important;
+            background-color: white;
+        }
+        textarea {
+            min-height: 6rem;
+            resize: vertical;
+        }
+        /* grid for checkboxes with consistent alignment */
+        .checkbox-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem 1.5rem;
+            align-items: center;
+        }
+        .checkbox-grid label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            white-space: nowrap;
+        }
+        /* image grid - preserve original aspect */
+        .image-grid-img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            background-color: #f8fafc;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+            display: block;
+        }
+        .image-item {
+            transition: all 0.15s;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            background: #f1f5f9;
+            border-radius: 0.5rem;
+        }
+        .remove-image-btn {
+            opacity: 0;
+            transition: opacity 0.15s;
+            position: absolute;
+            top: -0.5rem;
+            right: -0.5rem;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 9999px;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            border: 2px solid white;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .image-item:hover .remove-image-btn {
+            opacity: 1;
+        }
+        .spinner {
+            border: 2px solid #f1f5f9;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            width: 1.2rem;
+            height: 1.2rem;
+            animation: spin 0.7s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* color picker row */
+        .palette-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 1px solid #e2e8f0;
+        }
+        .color-palette-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            min-width: 100px;
+            border: 1px solid #e9eef2;
+        }
+        .color-swatch-large {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 0.5rem;
+            border: 2px solid #e2e8f0;
+            margin-bottom: 0.25rem;
+            cursor: pointer;
+        }
+        .color-hex-display {
+            font-size: 0.7rem;
+            background: #f1f5f9;
+            padding: 0.2rem;
+            border-radius: 0.25rem;
+            margin-top: 0.2rem;
+            width: 100%;
+            text-align: center;
+        }
+        .remove-color-btn {
+            margin-top: 0.25rem;
+            font-size: 0.7rem;
+            color: #ef4444;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans antialiased p-4 md:p-6">
+
+    <div class="max-w-6xl mx-auto">
+        <!-- capture area (everything except buttons) -->
+        <div id="pdfCaptureArea" class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+            <div class="h-1 bg-transparent"></div>
+
+            <div class="p-6 md:p-8 space-y-8">
+                <!-- header -->
+                <h1 class="text-3xl md:text-4xl font-bold text-slate-800 flex items-center gap-3">
+                    <i class="fa-solid fa-pen-ruler text-indigo-500"></i>
+                    <span>Project brief</span>
+                </h1>
+
+                <!-- ===== CLIENT ===== -->
+                <section>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-address-card text-indigo-400"></i> client info</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <input id="fullName" type="text" placeholder="Name (required)" required class="w-full border border-slate-200 rounded-lg bg-white">
+                        <input id="email" type="email" placeholder="E-mail (required)" required class="w-full border border-slate-200 rounded-lg bg-white">
+                        <input id="company" type="text" placeholder="Company (optional)" class="w-full border border-slate-200 rounded-lg bg-white">
+                        <input id="phone" type="tel" placeholder="Phone (optional)" class="w-full border border-slate-200 rounded-lg bg-white">
+                    </div>
+                </section>
+
+                <!-- ===== PROJECT ===== -->
+                <section>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-file-lines text-indigo-400"></i> project details</h2>
+                    <input id="projectName" type="text" placeholder="Project name (e.g. My Next App)" class="w-full border border-slate-200 rounded-lg mb-4 bg-white">
+                    <textarea id="description" rows="3" placeholder="Describe the core idea, goals, target audience, and any must-have features..." class="w-full border border-slate-200 rounded-lg bg-white"></textarea>
+                </section>
+
+                <!-- ===== PLATFORMS ===== -->
+                <section>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-window-maximize text-indigo-400"></i> target platforms</h2>
+                    <div class="checkbox-grid">
+                        <label><input type="checkbox" value="Web" data-cost="1000" class="platform-check"> Web</label>
+                        <label><input type="checkbox" value="Mobile" data-cost="2000" class="platform-check"> Mobile</label>
+                        <label><input type="checkbox" value="Desktop" data-cost="1500" class="platform-check"> Desktop</label>
+                        <label><input type="checkbox" value="Other" data-cost="3000" class="platform-check"> Other</label>
+                    </div>
+                </section>
+
+                <!-- ===== FEATURES ===== -->
+                <section>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-rectangle-list text-indigo-400"></i> features & modules</h2>
+                    <div class="checkbox-grid">
+                        <label><input type="checkbox" value="Authentication" data-cost="800"> Authentication</label>
+                        <label><input type="checkbox" value="Dashboard" data-cost="900"> Dashboard</label>
+                        <label><input type="checkbox" value="User Profiles" data-cost="700"> User Profiles</label>
+                        <label><input type="checkbox" value="Payments" data-cost="1200"> Payments</label>
+                        <label><input type="checkbox" value="Notifications" data-cost="500"> Notifications</label>
+                        <label><input type="checkbox" value="Admin Panel" data-cost="1500"> Admin Panel</label>
+                        <label><input type="checkbox" value="API" data-cost="1000"> API</label>
+                        <label><input type="checkbox" value="File Uploads" data-cost="600"> File Uploads</label>
+                        <label><input type="checkbox" value="Search" data-cost="500"> Search</label>
+                        <label><input type="checkbox" value="Real-time" data-cost="1300"> Real-time</label>
+                        <label><input type="checkbox" value="Analytics" data-cost="1100"> Analytics</label>
+                        <label><input type="checkbox" value="Multi-language" data-cost="950"> Multi-language</label>
+                    </div>
+                    <div class="mt-4">
+                        <input id="customFeatures" type="text" placeholder="Additional custom features (comma separated)" class="w-full border border-slate-200 rounded-lg bg-white">
+                    </div>
+                </section>
+
+                <!-- ===== EXTRAS ===== -->
+                <section>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-gem text-indigo-400"></i> extras / add-ons</h2>
+                    <div class="checkbox-grid">
+                        <label><input type="checkbox" value="Logo creation" data-cost="500"> Logo creation</label>
+                        <label><input type="checkbox" value="Ads (common sizes)" data-cost="700"> Ads (common sizes)</label>
+                        <label><input type="checkbox" value="Landing page" data-cost="1200"> Landing page</label>
+                        <label><input type="checkbox" value="SEO post" data-cost="300"> SEO post</label>
+                        <label><input type="checkbox" value="Video / explainer" data-cost="1500"> Video / explainer</label>
+                        <label><input type="checkbox" value="Extra revisions" data-cost="400"> Extra revisions</label>
+                        <label><input type="checkbox" value="Social media kit" data-cost="600"> Social media kit</label>
+                        <label><input type="checkbox" value="Content writing" data-cost="800"> Content writing</label>
+                    </div>
+                </section>
+
+                <!-- ===== THEME COLORS ===== -->
+                <section>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-solid fa-palette text-indigo-400"></i> theme colors (HEX picker)</h2>
+                    <div id="paletteRow" class="palette-row">
+                        <!-- dynamic color items injected here -->
+                    </div>
+                    <button id="addColorBtn" type="button" class="mt-3 text-sm bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-4 py-2 rounded-lg border border-indigo-200 inline-flex items-center gap-2"><i class="fa-regular fa-plus"></i> add color (max 5)</button>
+                </section>
+
+                <!-- ===== IMAGE MANAGER ===== -->
+                <section>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-images text-indigo-400"></i> reference images (original aspect)</h2>
+                    <div class="flex items-center gap-3">
+                        <label for="imageUpload" class="cursor-pointer bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium px-5 py-3 rounded-lg border border-indigo-200 inline-flex items-center gap-2 transition">
+                            <i class="fa-regular fa-plus"></i> add images
+                        </label>
+                        <input type="file" id="imageUpload" multiple accept="image/*" class="hidden">
+                        <span class="text-sm text-slate-400" id="imageCounter">0 images</span>
+                    </div>
+                    <div id="imageGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-5"></div>
+                </section>
+
+                <!-- ===== NOTES ===== -->
+                <section>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-note-sticky text-indigo-400"></i> notes / timeline / budget</h2>
+                    <textarea id="notes" rows="3" placeholder="e.g. Q3 2026, budget $250-$1k, integrations with other apps, color theme..." class="w-full border border-slate-200 rounded-lg bg-white"></textarea>
+                </section>
+
+                <!-- ===== ESTIMATE ===== -->
+                <section class="bg-slate-50 p-6 rounded-xl border border-slate-200">
+                    <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-chart-line text-green-600"></i> estimate snapshot</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div><span class="text-sm text-slate-500">estimated price</span><div id="priceDisplay" class="text-3xl font-bold text-indigo-700">$0</div></div>
+                        <div><span class="text-sm text-slate-500">complexity</span><div id="complexityDisplay" class="text-2xl font-semibold">Low</div></div>
+                        <div><span class="text-sm text-slate-500">timeframe</span><div id="timeDisplay" class="text-2xl font-semibold">1-2 weeks</div></div>
+                    </div>
+                </section>
+
+                <div class="text-xs text-slate-300 text-right">Prices and timeframe are for reference only. We'll get you back with once you send us the filled form PDF</div>
+            </div>
+        </div> <!-- end capture area -->
+
+        <!-- action button -->
+        <div class="mt-8 flex flex-wrap justify-end gap-4">
+            <button id="exportPdfBtn" class="px-8 py-3 bg-indigo-700 hover:bg-indigo-800 text-white rounded-xl shadow-md flex items-center gap-3 text-lg font-medium transition"><i class="fa-regular fa-file-pdf"></i> Export PDF</button>
+        </div>
+        <p class="text-xs text-right text-slate-400 mt-3">Please send back the generated Project Brief PDF to get the</p>
+    </div>
+
+    <script>
+        (function() {
+            // DOM elements
+            const fullName = document.getElementById('fullName');
+            const email = document.getElementById('email');
+            const company = document.getElementById('company');
+            const phone = document.getElementById('phone');
+            const projectName = document.getElementById('projectName');
+            const description = document.getElementById('description');
+            const customFeatures = document.getElementById('customFeatures');
+            const notes = document.getElementById('notes');
+            const imageUpload = document.getElementById('imageUpload');
+            const imageGrid = document.getElementById('imageGrid');
+            const imageCounter = document.getElementById('imageCounter');
+            const exportBtn = document.getElementById('exportPdfBtn');
+            const captureArea = document.getElementById('pdfCaptureArea');
+            const addColorBtn = document.getElementById('addColorBtn');
+            const paletteRow = document.getElementById('paletteRow');
+
+            const priceDisplay = document.getElementById('priceDisplay');
+            const complexityDisplay = document.getElementById('complexityDisplay');
+            const timeDisplay = document.getElementById('timeDisplay');
+            const allCheckboxes = document.querySelectorAll('input[type=checkbox][data-cost]');
+
+            // ----- Color palette with HEX only -----
+            let colorItems = [
+                { hex: '#303633' },
+                { hex: '#8be8cb' },
+                { hex: '#7ea2aa' }
+            ];
+            const MAX_COLORS = 5;
+
+            function renderPalette() {
+                let html = '';
+                colorItems.forEach((item, index) => {
+                    html += `
+                        <div class="color-palette-item" data-index="${index}">
+                            <div class="color-swatch-large" style="background-color: ${item.hex};"></div>
+                            <div class="color-hex-display">${item.hex}</div>
+                            ${index > 0 ? `<button class="remove-color-btn" data-index="${index}"><i class="fa-regular fa-trash-can"></i> remove</button>` : ''}
+                        </div>
+                    `;
+                });
+                paletteRow.innerHTML = html;
+
+                document.querySelectorAll('.color-swatch-large').forEach((swatch, idx) => {
+                    swatch.addEventListener('click', function(e) {
+                        const input = document.createElement('input');
+                        input.type = 'color';
+                        input.value = colorItems[idx].hex;
+                        input.addEventListener('input', (e) => {
+                            colorItems[idx].hex = e.target.value;
+                            renderPalette();
+                        });
+                        input.click();
+                    });
+                });
+
+                document.querySelectorAll('.remove-color-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const idx = btn.dataset.index;
+                        colorItems.splice(idx, 1);
+                        renderPalette();
+                        addColorBtn.disabled = colorItems.length >= MAX_COLORS;
+                        addColorBtn.classList.toggle('opacity-50', colorItems.length >= MAX_COLORS);
+                    });
+                });
+            }
+
+            renderPalette();
+            addColorBtn.addEventListener('click', () => {
+                if (colorItems.length < MAX_COLORS) {
+                    colorItems.push({ hex: '#aabbcc' });
+                    renderPalette();
+                }
+                addColorBtn.disabled = colorItems.length >= MAX_COLORS;
+                addColorBtn.classList.toggle('opacity-50', colorItems.length >= MAX_COLORS);
+            });
+
+            // ----- image manager -----
+            let imageList = [];
+            function renderImageGrid() {
+                if (imageList.length === 0) {
+                    imageGrid.innerHTML = `<div class="col-span-full text-slate-400 text-sm italic py-6 text-center border border-dashed rounded-lg">no images added</div>`;
+                } else {
+                    let html = '';
+                    imageList.forEach((img) => {
+                        html += `
+                            <div class="relative image-item">
+                                <img src="${img.dataURL}" class="image-grid-img" alt="ref" loading="lazy">
+                                <button class="remove-image-btn" data-id="${img.id}"><i class="fa-regular fa-times"></i></button>
+                            </div>
+                        `;
+                    });
+                    imageGrid.innerHTML = html;
+                    document.querySelectorAll('.remove-image-btn').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const id = btn.dataset.id;
+                            imageList = imageList.filter(img => img.id != id);
+                            renderImageGrid();
+                            updateImageCounter();
+                        });
+                    });
+                }
+                updateImageCounter();
+            }
+            function updateImageCounter() {
+                imageCounter.innerText = imageList.length + ' image' + (imageList.length !== 1 ? 's' : '');
+            }
+            imageUpload.addEventListener('change', function(e) {
+                const files = Array.from(e.target.files);
+                files.forEach(file => {
+                    if (!file.type.startsWith('image/')) return;
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        imageList.push({
+                            dataURL: ev.target.result,
+                            id: Date.now() + Math.random() + '-' + file.name
+                        });
+                        renderImageGrid();
+                    };
+                    reader.readAsDataURL(file);
+                });
+                imageUpload.value = '';
+            });
+            renderImageGrid();
+
+            // ----- estimate calculation -----
+            function calculateEstimate() {
+                let total = 0;
+                let count = 0;
+                allCheckboxes.forEach(cb => {
+                    if (cb.checked) {
+                        total += Number(cb.dataset.cost) || 0;
+                        count++;
+                    }
+                });
+                priceDisplay.innerText = '$' + total;
+                let complexity = 'Low';
+                let time = '1-2 weeks';
+                if (count > 4 && count <= 8) {
+                    complexity = 'Medium';
+                    time = '3-6 weeks';
+                } else if (count > 8) {
+                    complexity = 'High';
+                    time = '2-3 months';
+                }
+                complexityDisplay.innerText = complexity;
+                timeDisplay.innerText = time;
+            }
+            allCheckboxes.forEach(cb => cb.addEventListener('change', calculateEstimate));
+            calculateEstimate();
+
+            // ----- PDF export: multi-page A4 with proper width, INCLUDING theme colors -----
+            exportBtn.addEventListener('click', async function() {
+                const originalContent = exportBtn.innerHTML;
+                exportBtn.innerHTML = `<span class="spinner mr-2"></span> generating PDF...`;
+                exportBtn.disabled = true;
+
+                try {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+
+                    // IMPORTANT: Do NOT hide the palette row - we want colors in the PDF
+                    // We only hide the add button to keep it clean
+                    const addBtn = addColorBtn;
+                    const addBtnDisplay = addBtn.style.display;
+                    addBtn.style.display = 'none';
+
+                    // Create canvas from the entire capture area
+                    const canvas = await html2canvas(captureArea, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                        useCORS: true,
+                        allowTaint: false,
+                        windowWidth: captureArea.scrollWidth,
+                        windowHeight: captureArea.scrollHeight,
+                        onclone: (clonedDoc) => {
+                            // Replace inputs with static text
+                            const inputs = clonedDoc.querySelectorAll('input:not([type=checkbox]):not([type=color]), textarea');
+                            inputs.forEach(el => {
+                                const parent = el.parentNode;
+                                const value = el.value || el.placeholder || '';
+                                const staticDiv = clonedDoc.createElement('div');
+                                staticDiv.className = 'border border-slate-200 rounded-lg bg-white p-3 min-h-[3rem]';
+                                staticDiv.style.lineHeight = '1.5';
+                                staticDiv.style.whiteSpace = 'pre-wrap';
+                                staticDiv.style.wordWrap = 'break-word';
+                                staticDiv.style.padding = '0.75rem';
+                                staticDiv.textContent = value || ' ';
+                                parent.replaceChild(staticDiv, el);
+                            });
+                            
+                            // Also hide the add button in the clone
+                            const cloneAddBtn = clonedDoc.getElementById('addColorBtn');
+                            if (cloneAddBtn) {
+                                cloneAddBtn.style.display = 'none';
+                            }
+                        }
+                    });
+
+                    // Restore add button visibility
+                    addBtn.style.display = addBtnDisplay;
+
+                    // Create PDF with A4 dimensions
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF({
+                        orientation: 'portrait',
+                        unit: 'mm',
+                        format: 'a4'
+                    });
+
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = pdf.internal.pageSize.getHeight();
+                    
+                    // Calculate the scaling factor to fit the canvas width to A4 width
+                    const scale = pdfWidth / canvas.width;
+                    
+                    // Calculate the height of the content in PDF units
+                    const contentHeight = canvas.height * scale;
+                    
+                    // Calculate how many pages we need
+                    const pageHeight = pdfHeight;
+                    let remainingHeight = contentHeight;
+                    let currentPosition = 0;
+                    
+                    // Add first page
+                    let pageIndex = 0;
+                    
+                    while (remainingHeight > 0) {
+                        if (pageIndex > 0) {
+                            pdf.addPage();
+                        }
+                        
+                        // Calculate the portion of the canvas to render on this page
+                        const sourceY = currentPosition / scale;
+                        const pageCanvasHeight = Math.min(pageHeight / scale, canvas.height - sourceY);
+                        
+                        // Create a canvas for this page
+                        const pageCanvas = document.createElement('canvas');
+                        pageCanvas.width = canvas.width;
+                        pageCanvas.height = pageCanvasHeight;
+                        const ctx = pageCanvas.getContext('2d');
+                        ctx.drawImage(canvas, 0, sourceY, canvas.width, pageCanvasHeight, 0, 0, canvas.width, pageCanvasHeight);
+                        
+                        // Add image to PDF
+                        const pageImgData = pageCanvas.toDataURL('image/jpeg', 0.95);
+                        pdf.addImage(pageImgData, 'JPEG', 0, 0, pdfWidth, pageCanvasHeight * scale, undefined, 'FAST');
+                        
+                        remainingHeight -= pageHeight;
+                        currentPosition += pageHeight;
+                        pageIndex++;
+                    }
+
+                    pdf.save(`brief_${projectName.value.trim() || 'project'}.pdf`);
+
+                } catch (error) {
+                    console.error('PDF error', error);
+                    alert('PDF generation failed. Please try again.');
+                } finally {
+                    exportBtn.innerHTML = originalContent;
+                    exportBtn.disabled = false;
+                }
+            });
+        })();
+    </script>
+    <noscript>JavaScript required.</noscript>
+</body>
+</html>
