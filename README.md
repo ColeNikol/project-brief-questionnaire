@@ -46,8 +46,11 @@ Use Cases:
 - Startup founders outlining MVPs
 - Product managers documenting features
 
+Adding and editing sections, services and setting prices and timeframes:
+1. You can do it manually changing valies by editing generated_brief.html directly, or put all files on a PHP server and
+2. Use admin.php to do it via UI in more elegant way. Default username: admin, password: pass
+
 License
 
 This project is licensed under the MIT License.
-
 You are free to use, modify, and distribute it for personal or commercial purposes.
