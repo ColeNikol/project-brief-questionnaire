@@ -1,9 +1,64 @@
+<!--
+Project Brief Questionnaire
+Copyright (c) ColeNikol 2026
+
+This application is released under the MIT License.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files to deal in the Software
+without restriction, including without limitation the rights to use, copy,
+modify, merge, publish, distribute, sublicense, and/or sell copies.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+
+---------------------------------------------------------------------
+
+Third-party libraries used in this application:
+
+Tailwind CSS
+https://tailwindcss.com
+License: MIT License
+
+Font Awesome Free
+https://fontawesome.com
+Icons License: CC BY 4.0
+Fonts License: SIL Open Font License 1.1
+Code License: MIT License
+
+html2canvas
+https://html2canvas.hertzen.com
+License: MIT License
+
+jsPDF
+https://github.com/parallax/jsPDF
+License: MIT License
+
+All third-party libraries are used via public CDN and remain the property
+of their respective authors.
+
+---------------------------------------------------------------------
+
+App stack:
+- Responsive HTML5
+- Tailwind CSS (CDN)
+- Font Awesome Free icons
+- Vanilla JavaScript
+- html2canvas for DOM capture
+- jsPDF for PDF generation
+
+---------------------------------------------------------------------
+
+App name: Project Brief Questionnaire
+Author: ColeNikol aka ColeN / https://bit.ly/colenikol
+License: MIT
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project brief · Multi-page A4 PDF with colors</title>
+    <title>Project Brief Questionnaire</title>
     <!-- Tailwind + Font Awesome -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -149,16 +204,16 @@
             <div class="p-6 md:p-8 space-y-8">
                 <!-- header -->
                 <h1 class="text-3xl md:text-4xl font-bold text-slate-800 flex items-center gap-3">
-                    <i class="fa-solid fa-pen-ruler text-indigo-500"></i>
-                    <span>Project brief</span>
+                    <i class="fa-solid fa-pen-ruler text-blue-600"></i>
+                    <span>Project Brief Questionnaire</span>
                 </h1>
 
                 <!-- ===== CLIENT ===== -->
                 <section>
-                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-address-card text-indigo-400"></i> client info</h2>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-address-card text-blue-400"></i> Client info</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <input id="fullName" type="text" placeholder="Name (required)" required class="w-full border border-slate-200 rounded-lg bg-white">
-                        <input id="email" type="email" placeholder="E-mail (required)" required class="w-full border border-slate-200 rounded-lg bg-white">
+                        <input id="fullName" type="text" required placeholder="Name (required)" class="w-full border border-slate-200 rounded-lg bg-white">
+                        <input id="email" type="email" required placeholder="Email (required)" class="w-full border border-slate-200 rounded-lg bg-white">
                         <input id="company" type="text" placeholder="Company (optional)" class="w-full border border-slate-200 rounded-lg bg-white">
                         <input id="phone" type="tel" placeholder="Phone (optional)" class="w-full border border-slate-200 rounded-lg bg-white">
                     </div>
@@ -166,8 +221,8 @@
 
                 <!-- ===== PROJECT ===== -->
                 <section>
-                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-file-lines text-indigo-400"></i> project details</h2>
-                    <input id="projectName" type="text" placeholder="Project name (e.g. My Next App)" class="w-full border border-slate-200 rounded-lg mb-4 bg-white">
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-file-lines text-blue-400"></i> Project details</h2>
+                    <input id="projectName" type="text" placeholder="Project name (e.g. Your App Idea)" class="w-full border border-slate-200 rounded-lg mb-4 bg-white">
                     <textarea id="description" rows="3" placeholder="Describe the core idea, goals, target audience, and any must-have features..." class="w-full border border-slate-200 rounded-lg bg-white"></textarea>
                 </section>
 
@@ -184,7 +239,7 @@
 
                 <!-- ===== FEATURES ===== -->
                 <section>
-                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-rectangle-list text-indigo-400"></i> features & modules</h2>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-rectangle-list text-blue-400"></i> Features & modules</h2>
                     <div class="checkbox-grid">
                         <label><input type="checkbox" value="Authentication" data-cost="800"> Authentication</label>
                         <label><input type="checkbox" value="Dashboard" data-cost="900"> Dashboard</label>
@@ -200,39 +255,32 @@
                         <label><input type="checkbox" value="Multi-language" data-cost="950"> Multi-language</label>
                     </div>
                     <div class="mt-4">
-                        <input id="customFeatures" type="text" placeholder="Additional custom features (comma separated)" class="w-full border border-slate-200 rounded-lg bg-white">
+                        <input id="customFeatures" type="text" placeholder="Additional custom features" class="w-full border border-slate-200 rounded-lg bg-white">
                     </div>
                 </section>
 
                 <!-- ===== EXTRAS ===== -->
                 <section>
-                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-gem text-indigo-400"></i> extras / add-ons</h2>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-gem text-blue-400"></i> Extras / Add-ons</h2>
                     <div class="checkbox-grid">
-                        <label><input type="checkbox" value="Logo creation" data-cost="500"> Logo creation</label>
-                        <label><input type="checkbox" value="Ads (common sizes)" data-cost="700"> Ads (common sizes)</label>
-                        <label><input type="checkbox" value="Landing page" data-cost="1200"> Landing page</label>
-                        <label><input type="checkbox" value="SEO post" data-cost="300"> SEO post</label>
-                        <label><input type="checkbox" value="Video / explainer" data-cost="1500"> Video / explainer</label>
-                        <label><input type="checkbox" value="Extra revisions" data-cost="400"> Extra revisions</label>
-                        <label><input type="checkbox" value="Social media kit" data-cost="600"> Social media kit</label>
-                        <label><input type="checkbox" value="Content writing" data-cost="800"> Content writing</label>
+                        <label><input type="checkbox" value="Logo creation" data-cost="50"> Logo creation</label><label><input type="checkbox" value="Ads (common sizes)" data-cost="50"> Ads (common sizes)</label><label><input type="checkbox" value="Landing page" data-cost="25"> Landing page</label><label><input type="checkbox" value="SEO post" data-cost="15"> SEO post with images</label><label><input type="checkbox" value="Video / explainer" data-cost="75"> Video / explainer (30 seconds)</label><label><input type="checkbox" value="Extra revisions" data-cost="20"> Extra revisions (x2)</label><label><input type="checkbox" value="Social media kit" data-cost="50"> Social media kit</label><label><input type="checkbox" value="Content writing" data-cost="12"> Content writing</label><label><input type="checkbox" value="Video ad" data-cost="35"> 15 seconds video ad</label>
                     </div>
                 </section>
 
                 <!-- ===== THEME COLORS ===== -->
                 <section>
-                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-solid fa-palette text-indigo-400"></i> theme colors (HEX picker)</h2>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-solid fa-palette text-blue-400"></i> Colors palette</h2>
                     <div id="paletteRow" class="palette-row">
                         <!-- dynamic color items injected here -->
                     </div>
-                    <button id="addColorBtn" type="button" class="mt-3 text-sm bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-4 py-2 rounded-lg border border-indigo-200 inline-flex items-center gap-2"><i class="fa-regular fa-plus"></i> add color (max 5)</button>
+                    <button id="addColorBtn" type="button" class="mt-3 text-sm bg-indigo-50 hover:bg-indigo-100 text-blue-700 px-4 py-2 rounded-lg border border-indigo-200 inline-flex items-center gap-2"><i class="fa-regular fa-plus"></i> add color (max 5)</button>
                 </section>
 
                 <!-- ===== IMAGE MANAGER ===== -->
                 <section>
-                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-images text-indigo-400"></i> reference images (original aspect)</h2>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-images text-blue-400"></i> Reference images</h2>
                     <div class="flex items-center gap-3">
-                        <label for="imageUpload" class="cursor-pointer bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium px-5 py-3 rounded-lg border border-indigo-200 inline-flex items-center gap-2 transition">
+                        <label for="imageUpload" class="cursor-pointer bg-indigo-50 hover:bg-indigo-100 text-blue-700 font-medium px-5 py-3 rounded-lg border border-indigo-200 inline-flex items-center gap-2 transition">
                             <i class="fa-regular fa-plus"></i> add images
                         </label>
                         <input type="file" id="imageUpload" multiple accept="image/*" class="hidden">
@@ -243,29 +291,29 @@
 
                 <!-- ===== NOTES ===== -->
                 <section>
-                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-note-sticky text-indigo-400"></i> notes / timeline / budget</h2>
-                    <textarea id="notes" rows="3" placeholder="e.g. Q3 2026, budget $250-$1k, integrations with other apps, color theme..." class="w-full border border-slate-200 rounded-lg bg-white"></textarea>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-note-sticky text-blue-400"></i> Additional notes / Timeline / Budget</h2>
+                    <textarea id="notes" rows="3" placeholder="e.g. Q2 2026, budget $250-$1k, integrations with other apps, colors, sites for inspiration..." class="w-full border border-slate-200 rounded-lg bg-white"></textarea>
                 </section>
 
                 <!-- ===== ESTIMATE ===== -->
                 <section class="bg-slate-50 p-6 rounded-xl border border-slate-200">
                     <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-chart-line text-green-600"></i> estimate snapshot</h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div><span class="text-sm text-slate-500">estimated price</span><div id="priceDisplay" class="text-3xl font-bold text-indigo-700">$0</div></div>
+                        <div><span class="text-sm text-slate-500">estimated price</span><div id="priceDisplay" class="text-3xl font-bold text-blue-700">$0</div></div>
                         <div><span class="text-sm text-slate-500">complexity</span><div id="complexityDisplay" class="text-2xl font-semibold">Low</div></div>
                         <div><span class="text-sm text-slate-500">timeframe</span><div id="timeDisplay" class="text-2xl font-semibold">1-2 weeks</div></div>
                     </div>
                 </section>
 
-                <div class="text-xs text-slate-300 text-right">Prices and timeframe are for reference only. We'll get you back with once you send us the filled form PDF</div>
+                <div class="text-xs text-slate-300 text-right">* Prices and timeframe are just estimates and are negotiable</div>
             </div>
         </div> <!-- end capture area -->
 
         <!-- action button -->
         <div class="mt-8 flex flex-wrap justify-end gap-4">
-            <button id="exportPdfBtn" class="px-8 py-3 bg-indigo-700 hover:bg-indigo-800 text-white rounded-xl shadow-md flex items-center gap-3 text-lg font-medium transition"><i class="fa-regular fa-file-pdf"></i> Export PDF</button>
+            <button id="exportPdfBtn" class="px-8 py-3 bg-indigo-700 hover:bg-indigo-800 text-white rounded-xl shadow-md flex items-center gap-3 text-lg font-medium transition"><i class="fa-solid fa-file-arrow-down"></i> Export as PDF</button>
         </div>
-        <p class="text-xs text-right text-slate-400 mt-3">Please send back the generated Project Brief PDF to get the</p>
+        <p class="text-xs text-right text-slate-400 mt-3">Send us the generated PDF with your Project Brief</p>
     </div>
 
     <script>
@@ -292,11 +340,12 @@
             const timeDisplay = document.getElementById('timeDisplay');
             const allCheckboxes = document.querySelectorAll('input[type=checkbox][data-cost]');
 
+            // Timeframes configuration
+            const timeframes = {"low":"3 Days","medium":"7 Days","high":"2 Weeks"};
+
             // ----- Color palette with HEX only -----
             let colorItems = [
                 { hex: '#303633' },
-                { hex: '#8be8cb' },
-                { hex: '#7ea2aa' }
             ];
             const MAX_COLORS = 5;
 
@@ -395,7 +444,7 @@
             });
             renderImageGrid();
 
-            // ----- estimate calculation -----
+            // ----- estimate calculation with configurable timeframes -----
             function calculateEstimate() {
                 let total = 0;
                 let count = 0;
@@ -406,14 +455,16 @@
                     }
                 });
                 priceDisplay.innerText = '$' + total;
+                
                 let complexity = 'Low';
-                let time = '1-2 weeks';
+                let time = timeframes.low;
+                
                 if (count > 4 && count <= 8) {
                     complexity = 'Medium';
-                    time = '3-6 weeks';
+                    time = timeframes.medium;
                 } else if (count > 8) {
                     complexity = 'High';
-                    time = '2-3 months';
+                    time = timeframes.high;
                 }
                 complexityDisplay.innerText = complexity;
                 timeDisplay.innerText = time;
