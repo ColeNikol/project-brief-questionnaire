@@ -33,6 +33,7 @@ How It Works
 2. Add features, platforms, and extras.
 3. Upload reference images and choose colors.
 4. Click Export as PDF.
+5. Send back the generated PDF Project Brief to the freelancer or agency.
 
 The app generates and downloads a PDF file containing the full project brief.
 
