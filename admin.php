@@ -33,6 +33,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_config']) && iss
         'timeframes' => json_decode($_POST['timeframes'], true)
     ];
     
+    // Save config to file
+    file_put_contents('brief_config.json', json_encode($config, JSON_PRETTY_PRINT));
+    
     // Generate the new HTML file
     $html_content = generateHtmlFromConfig($config);
     file_put_contents('generated_brief.html', $html_content);
@@ -74,12 +77,68 @@ function generateHtmlFromConfig($config) {
     $timeframes_js = json_encode($config['timeframes']);
     
     return <<<HTML
+<!--
+Project Brief Questionnaire
+Copyright (c) ColeNikol 2026
+
+This application is released under the MIT License.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files to deal in the Software
+without restriction, including without limitation the rights to use, copy,
+modify, merge, publish, distribute, sublicense, and/or sell copies.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+
+---------------------------------------------------------------------
+
+Third-party libraries used in this application:
+
+Tailwind CSS
+https://tailwindcss.com
+License: MIT License
+
+Font Awesome Free
+https://fontawesome.com
+Icons License: CC BY 4.0
+Fonts License: SIL Open Font License 1.1
+Code License: MIT License
+
+html2canvas
+https://html2canvas.hertzen.com
+License: MIT License
+
+jsPDF
+https://github.com/parallax/jsPDF
+License: MIT License
+
+All third-party libraries are used via public CDN and remain the property
+of their respective authors.
+
+---------------------------------------------------------------------
+
+App stack:
+- Responsive HTML5
+- Tailwind CSS (CDN)
+- Font Awesome Free icons
+- Vanilla JavaScript
+- html2canvas for DOM capture
+- jsPDF for PDF generation
+
+---------------------------------------------------------------------
+
+App name: Project Brief Questionnaire
+App version: 1.0.1
+Author: ColeNikol aka ColeN / https://bit.ly/colenikol
+License: MIT
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project brief · Multi-page A4 PDF with colors</title>
+    <title>Project Brief Questionnaire</title>
     <!-- Tailwind + Font Awesome -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -225,25 +284,25 @@ function generateHtmlFromConfig($config) {
             <div class="p-6 md:p-8 space-y-8">
                 <!-- header -->
                 <h1 class="text-3xl md:text-4xl font-bold text-slate-800 flex items-center gap-3">
-                    <i class="fa-solid fa-pen-ruler text-indigo-500"></i>
-                    <span>Project brief</span>
+                    <i class="fa-solid fa-pen-ruler text-blue-600"></i>
+                    <span>Project Brief Questionnaire</span>
                 </h1>
 
                 <!-- ===== CLIENT ===== -->
                 <section>
-                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-address-card text-indigo-400"></i> client info</h2>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-address-card text-blue-400"></i> Client info</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <input id="fullName" type="text" placeholder="e.g. Alex Rivera" class="w-full border border-slate-200 rounded-lg bg-white">
-                        <input id="email" type="email" placeholder="alex@example.com" class="w-full border border-slate-200 rounded-lg bg-white">
-                        <input id="company" type="text" placeholder="Creative Studio (optional)" class="w-full border border-slate-200 rounded-lg bg-white">
-                        <input id="phone" type="tel" placeholder="+1 555 123 4567" class="w-full border border-slate-200 rounded-lg bg-white">
+                        <input id="fullName" type="text" required placeholder="Name (required)" class="w-full border border-slate-200 rounded-lg bg-white">
+                        <input id="email" type="email" required placeholder="Email (required)" class="w-full border border-slate-200 rounded-lg bg-white">
+                        <input id="company" type="text" placeholder="Company (optional)" class="w-full border border-slate-200 rounded-lg bg-white">
+                        <input id="phone" type="tel" placeholder="Phone (optional)" class="w-full border border-slate-200 rounded-lg bg-white">
                     </div>
                 </section>
 
                 <!-- ===== PROJECT ===== -->
                 <section>
-                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-file-lines text-indigo-400"></i> project details</h2>
-                    <input id="projectName" type="text" placeholder="Project name (e.g. TaskFlow Pro)" class="w-full border border-slate-200 rounded-lg mb-4 bg-white">
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-file-lines text-blue-400"></i> Project details</h2>
+                    <input id="projectName" type="text" placeholder="Project name (e.g. Your App Idea)" class="w-full border border-slate-200 rounded-lg mb-4 bg-white">
                     <textarea id="description" rows="3" placeholder="Describe the core idea, goals, target audience, and any must-have features..." class="w-full border border-slate-200 rounded-lg bg-white"></textarea>
                 </section>
 
@@ -257,18 +316,18 @@ function generateHtmlFromConfig($config) {
 
                 <!-- ===== FEATURES ===== -->
                 <section>
-                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-rectangle-list text-indigo-400"></i> features & modules</h2>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-rectangle-list text-blue-400"></i> Features & modules</h2>
                     <div class="checkbox-grid">
                         {$features_html}
                     </div>
                     <div class="mt-4">
-                        <input id="customFeatures" type="text" placeholder="Additional custom features (comma separated)" class="w-full border border-slate-200 rounded-lg bg-white">
+                        <input id="customFeatures" type="text" placeholder="Additional custom features" class="w-full border border-slate-200 rounded-lg bg-white">
                     </div>
                 </section>
 
                 <!-- ===== EXTRAS ===== -->
                 <section>
-                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-gem text-indigo-400"></i> extras / add-ons</h2>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-gem text-blue-400"></i> Extras / Add-ons</h2>
                     <div class="checkbox-grid">
                         {$extras_html}
                     </div>
@@ -276,18 +335,18 @@ function generateHtmlFromConfig($config) {
 
                 <!-- ===== THEME COLORS ===== -->
                 <section>
-                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-solid fa-palette text-indigo-400"></i> theme colors (HEX picker)</h2>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-solid fa-palette text-blue-400"></i> Colors palette</h2>
                     <div id="paletteRow" class="palette-row">
                         <!-- dynamic color items injected here -->
                     </div>
-                    <button id="addColorBtn" type="button" class="mt-3 text-sm bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-4 py-2 rounded-lg border border-indigo-200 inline-flex items-center gap-2"><i class="fa-regular fa-plus"></i> add color (max 5)</button>
+                    <button id="addColorBtn" type="button" class="mt-3 text-sm bg-indigo-50 hover:bg-indigo-100 text-blue-700 px-4 py-2 rounded-lg border border-indigo-200 inline-flex items-center gap-2"><i class="fa-regular fa-plus"></i> add color (max 5)</button>
                 </section>
 
                 <!-- ===== IMAGE MANAGER ===== -->
                 <section>
-                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-images text-indigo-400"></i> reference images (original aspect)</h2>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-images text-blue-400"></i> Reference images</h2>
                     <div class="flex items-center gap-3">
-                        <label for="imageUpload" class="cursor-pointer bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium px-5 py-3 rounded-lg border border-indigo-200 inline-flex items-center gap-2 transition">
+                        <label for="imageUpload" class="cursor-pointer bg-indigo-50 hover:bg-indigo-100 text-blue-700 font-medium px-5 py-3 rounded-lg border border-indigo-200 inline-flex items-center gap-2 transition">
                             <i class="fa-regular fa-plus"></i> add images
                         </label>
                         <input type="file" id="imageUpload" multiple accept="image/*" class="hidden">
@@ -298,29 +357,29 @@ function generateHtmlFromConfig($config) {
 
                 <!-- ===== NOTES ===== -->
                 <section>
-                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-note-sticky text-indigo-400"></i> notes / timeline / budget</h2>
-                    <textarea id="notes" rows="3" placeholder="e.g. Q4 2025, budget $25k-$35k, integrations with Slack & Google Calendar, pastel colors..." class="w-full border border-slate-200 rounded-lg bg-white"></textarea>
+                    <h2 class="text-lg font-semibold text-slate-700 mb-3 flex items-center gap-2 border-b border-slate-100 pb-2"><i class="fa-regular fa-note-sticky text-blue-400"></i> Additional notes / Timeline / Budget</h2>
+                    <textarea id="notes" rows="3" placeholder="e.g. Q2 2026, budget $250-$1k, integrations with other apps, colors, sites for inspiration..." class="w-full border border-slate-200 rounded-lg bg-white"></textarea>
                 </section>
 
                 <!-- ===== ESTIMATE ===== -->
                 <section class="bg-slate-50 p-6 rounded-xl border border-slate-200">
                     <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-chart-line text-green-600"></i> estimate snapshot</h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div><span class="text-sm text-slate-500">estimated price</span><div id="priceDisplay" class="text-3xl font-bold text-indigo-700">$0</div></div>
+                        <div><span class="text-sm text-slate-500">estimated price</span><div id="priceDisplay" class="text-3xl font-bold text-blue-700">$0</div></div>
                         <div><span class="text-sm text-slate-500">complexity</span><div id="complexityDisplay" class="text-2xl font-semibold">Low</div></div>
                         <div><span class="text-sm text-slate-500">timeframe</span><div id="timeDisplay" class="text-2xl font-semibold">1-2 weeks</div></div>
                     </div>
                 </section>
 
-                <div class="text-xs text-slate-300 text-right">all fields editable · HEX colors only</div>
+                <div class="text-xs text-slate-300 text-right">* We'll get you back with correct offer once you send us the filled form PDF</div>
             </div>
         </div> <!-- end capture area -->
 
         <!-- action button -->
         <div class="mt-8 flex flex-wrap justify-end gap-4">
-            <button id="exportPdfBtn" class="px-8 py-3 bg-indigo-700 hover:bg-indigo-800 text-white rounded-xl shadow-md flex items-center gap-3 text-lg font-medium transition"><i class="fa-regular fa-file-pdf"></i> Export PDF (A4 multi-page)</button>
+            <button id="exportPdfBtn" class="px-8 py-3 bg-indigo-700 hover:bg-indigo-800 text-white rounded-xl shadow-md flex items-center gap-3 text-lg font-medium transition"><i class="fa-solid fa-file-arrow-down"></i> Export as PDF</button>
         </div>
-        <p class="text-xs text-right text-slate-400 mt-3">PDF fits A4 width, flows to multiple pages, includes theme colors.</p>
+        <p class="text-xs text-right text-slate-400 mt-3">Send us your Project Brief <a href="https://sites.google.com/view/stojan-nikolovski/contact">via DM</a></p>
     </div>
 
     <script>
@@ -353,8 +412,6 @@ function generateHtmlFromConfig($config) {
             // ----- Color palette with HEX only -----
             let colorItems = [
                 { hex: '#303633' },
-                { hex: '#8be8cb' },
-                { hex: '#7ea2aa' }
             ];
             const MAX_COLORS = 5;
 
@@ -483,6 +540,12 @@ function generateHtmlFromConfig($config) {
 
             // ----- PDF export: multi-page A4 with proper width, INCLUDING theme colors -----
             exportBtn.addEventListener('click', async function() {
+                // Validate required fields
+                if (!fullName.value.trim() || !email.value.trim()) {
+                    alert('Please fill in Name and Email fields before exporting.');
+                    return;
+                }
+
                 const originalContent = exportBtn.innerHTML;
                 exportBtn.innerHTML = `<span class="spinner mr-2"></span> generating PDF...`;
                 exportBtn.disabled = true;
@@ -600,43 +663,43 @@ function generateHtmlFromConfig($config) {
 HTML;
 }
 
-// Default configuration
+// Default configuration based on the provided generated_brief.html
 $default_config = [
     'sections' => ['client', 'project', 'platforms', 'features', 'extras', 'colors', 'images', 'notes', 'estimate'],
     'platforms' => [
-        ['label' => 'Web App', 'value' => 'Web App', 'cost' => 1000],
-        ['label' => 'Mobile App', 'value' => 'Mobile App', 'cost' => 2000],
-        ['label' => 'Desktop', 'value' => 'Desktop App', 'cost' => 1500],
-        ['label' => 'SaaS', 'value' => 'SaaS', 'cost' => 3000]
+        ['label' => 'Web', 'value' => 'Web', 'cost' => 1000],
+        ['label' => 'Mobile', 'value' => 'Mobile', 'cost' => 2000],
+        ['label' => 'Desktop', 'value' => 'Desktop', 'cost' => 1500],
+        ['label' => 'Other', 'value' => 'Other', 'cost' => 3000]
     ],
     'features' => [
-        ['label' => 'Authentication', 'value' => 'Authentication', 'cost' => 800],
-        ['label' => 'Dashboard', 'value' => 'Dashboard', 'cost' => 900],
-        ['label' => 'User Profiles', 'value' => 'User Profiles', 'cost' => 700],
-        ['label' => 'Payments', 'value' => 'Payments', 'cost' => 1200],
-        ['label' => 'Notifications', 'value' => 'Notifications', 'cost' => 500],
-        ['label' => 'Admin Panel', 'value' => 'Admin Panel', 'cost' => 1500],
-        ['label' => 'API', 'value' => 'API', 'cost' => 1000],
-        ['label' => 'File Uploads', 'value' => 'File Uploads', 'cost' => 600],
-        ['label' => 'Search', 'value' => 'Search', 'cost' => 500],
-        ['label' => 'Real-time', 'value' => 'Real-time', 'cost' => 1300],
-        ['label' => 'Analytics', 'value' => 'Analytics', 'cost' => 1100],
-        ['label' => 'Multi-language', 'value' => 'Multi-language', 'cost' => 950]
+        ['label' => 'Authentication', 'value' => 'Authentication', 'cost' => 15],
+        ['label' => 'Dashboard', 'value' => 'Dashboard', 'cost' => 50],
+        ['label' => 'User Profiles', 'value' => 'User Profiles', 'cost' => 100],
+        ['label' => 'Payments', 'value' => 'Payments', 'cost' => 250],
+        ['label' => 'Notifications', 'value' => 'Notifications', 'cost' => 50],
+        ['label' => 'Admin Panel', 'value' => 'Admin Panel', 'cost' => 50],
+        ['label' => 'API', 'value' => 'API', 'cost' => 250],
+        ['label' => 'File Uploads', 'value' => 'File Uploads', 'cost' => 20],
+        ['label' => 'Search', 'value' => 'Search', 'cost' => 20],
+        ['label' => 'Real-time', 'value' => 'Real-time', 'cost' => 40],
+        ['label' => 'Analytics', 'value' => 'Analytics', 'cost' => 20],
+        ['label' => 'Export-Import', 'value' => 'Export-Import', 'cost' => 50]
     ],
     'extras' => [
-        ['label' => 'Logo creation', 'value' => 'Logo creation', 'cost' => 500],
-        ['label' => 'Ads (common sizes)', 'value' => 'Ads (common sizes)', 'cost' => 700],
-        ['label' => 'Landing page', 'value' => 'Landing page', 'cost' => 1200],
-        ['label' => 'SEO post', 'value' => 'SEO post', 'cost' => 300],
-        ['label' => 'Video / explainer', 'value' => 'Video / explainer', 'cost' => 1500],
-        ['label' => 'Extra revisions', 'value' => 'Extra revisions', 'cost' => 400],
-        ['label' => 'Social media kit', 'value' => 'Social media kit', 'cost' => 600],
-        ['label' => 'Content writing', 'value' => 'Content writing', 'cost' => 800]
+        ['label' => 'Logo creation', 'value' => 'Logo creation', 'cost' => 100],
+        ['label' => 'Ads (common sizes)', 'value' => 'Ads (common sizes)', 'cost' => 75],
+        ['label' => 'Landing page', 'value' => 'Landing page', 'cost' => 50],
+        ['label' => 'SEO post', 'value' => 'SEO post', 'cost' => 20],
+        ['label' => 'Video / explainer', 'value' => 'Video / explainer', 'cost' => 200],
+        ['label' => 'Extra revisions', 'value' => 'Extra revisions', 'cost' => 20],
+        ['label' => 'Social media kit', 'value' => 'Social media kit', 'cost' => 100],
+        ['label' => 'Content writing', 'value' => 'Content writing', 'cost' => 20]
     ],
     'timeframes' => [
-        'low' => '1-2 weeks',
-        'medium' => '3-6 weeks',
-        'high' => '2-3 months'
+        'low' => '3 Days',
+        'medium' => '7 Days',
+        'high' => '2 Weeks'
     ]
 ];
 
@@ -672,7 +735,7 @@ if (file_exists('brief_config.json')) {
         }
         .item-row {
             display: grid;
-            grid-template-columns: 1fr 100px 80px;
+            grid-template-columns: 1fr 100px 120px;
             gap: 0.5rem;
             margin-bottom: 0.5rem;
             align-items: center;
@@ -681,6 +744,7 @@ if (file_exists('brief_config.json')) {
             padding: 0.5rem;
             border: 1px solid #e2e8f0;
             border-radius: 0.375rem;
+            width: 100%;
         }
         .remove-btn {
             color: #ef4444;
@@ -707,23 +771,30 @@ if (file_exists('brief_config.json')) {
             margin-bottom: 2rem;
             border-bottom: 2px solid #e2e8f0;
             padding-bottom: 0.5rem;
+            flex-wrap: wrap;
         }
         .nav-tab {
             cursor: pointer;
             padding: 0.5rem 1rem;
             color: #64748b;
             font-weight: 500;
+            border-radius: 0.375rem;
         }
         .nav-tab.active {
             color: #3b82f6;
-            border-bottom: 2px solid #3b82f6;
-            margin-bottom: -0.5rem;
+            background: #eff6ff;
         }
         .tab-content {
             display: none;
         }
         .tab-content.active {
             display: block;
+        }
+        .timeframe-input {
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            width: 100%;
         }
     </style>
 </head>
@@ -759,12 +830,15 @@ if (file_exists('brief_config.json')) {
             <!-- Admin Panel -->
             <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
                 <div class="p-6 md:p-8">
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
                         <h1 class="text-3xl font-bold text-slate-800 flex items-center gap-3">
                             <i class="fa-solid fa-gear text-indigo-500"></i>
                             <span>Admin Configuration</span>
                         </h1>
                         <div class="flex gap-3">
+                            <a href="generated_brief.html" target="_blank" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition flex items-center gap-2">
+                                <i class="fa-regular fa-eye"></i> View Generated
+                            </a>
                             <a href="?logout=1" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition flex items-center gap-2">
                                 <i class="fa-solid fa-sign-out-alt"></i> Logout
                             </a>
@@ -775,9 +849,6 @@ if (file_exists('brief_config.json')) {
                         <div class="bg-green-50 text-green-700 p-4 rounded-lg mb-6 flex items-center gap-3">
                             <i class="fa-regular fa-circle-check text-xl"></i>
                             <?php echo $save_success; ?>
-                            <a href="generated_brief.html" target="_blank" class="ml-auto bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
-                                <i class="fa-regular fa-eye mr-2"></i> View Generated Form
-                            </a>
                         </div>
                     <?php endif; ?>
 
@@ -801,9 +872,9 @@ if (file_exists('brief_config.json')) {
                                         <button type="button" class="remove-btn" onclick="removeItem(this, 'platforms')"><i class="fa-regular fa-trash-can"></i></button>
                                     </div>
                                     <div class="item-row">
-                                        <input type="text" name="platforms[<?php echo $index; ?>][label]" value="<?php echo htmlspecialchars($platform['label']); ?>" placeholder="Label (e.g. Web App)">
-                                        <input type="number" name="platforms[<?php echo $index; ?>][cost]" value="<?php echo $platform['cost']; ?>" placeholder="Cost">
-                                        <input type="text" name="platforms[<?php echo $index; ?>][value]" value="<?php echo htmlspecialchars($platform['value']); ?>" placeholder="Value">
+                                        <input type="text" name="platforms[<?php echo $index; ?>][label]" value="<?php echo htmlspecialchars($platform['label']); ?>" placeholder="Label (e.g. Web)" required>
+                                        <input type="number" name="platforms[<?php echo $index; ?>][cost]" value="<?php echo $platform['cost']; ?>" placeholder="Cost" required>
+                                        <input type="text" name="platforms[<?php echo $index; ?>][value]" value="<?php echo htmlspecialchars($platform['value']); ?>" placeholder="Value (e.g. Web)" required>
                                     </div>
                                 </div>
                                 <?php endforeach; ?>
@@ -822,9 +893,9 @@ if (file_exists('brief_config.json')) {
                                         <button type="button" class="remove-btn" onclick="removeItem(this, 'features')"><i class="fa-regular fa-trash-can"></i></button>
                                     </div>
                                     <div class="item-row">
-                                        <input type="text" name="features[<?php echo $index; ?>][label]" value="<?php echo htmlspecialchars($feature['label']); ?>" placeholder="Label">
-                                        <input type="number" name="features[<?php echo $index; ?>][cost]" value="<?php echo $feature['cost']; ?>" placeholder="Cost">
-                                        <input type="text" name="features[<?php echo $index; ?>][value]" value="<?php echo htmlspecialchars($feature['value']); ?>" placeholder="Value">
+                                        <input type="text" name="features[<?php echo $index; ?>][label]" value="<?php echo htmlspecialchars($feature['label']); ?>" placeholder="Label" required>
+                                        <input type="number" name="features[<?php echo $index; ?>][cost]" value="<?php echo $feature['cost']; ?>" placeholder="Cost" required>
+                                        <input type="text" name="features[<?php echo $index; ?>][value]" value="<?php echo htmlspecialchars($feature['value']); ?>" placeholder="Value" required>
                                     </div>
                                 </div>
                                 <?php endforeach; ?>
@@ -843,9 +914,9 @@ if (file_exists('brief_config.json')) {
                                         <button type="button" class="remove-btn" onclick="removeItem(this, 'extras')"><i class="fa-regular fa-trash-can"></i></button>
                                     </div>
                                     <div class="item-row">
-                                        <input type="text" name="extras[<?php echo $index; ?>][label]" value="<?php echo htmlspecialchars($extra['label']); ?>" placeholder="Label">
-                                        <input type="number" name="extras[<?php echo $index; ?>][cost]" value="<?php echo $extra['cost']; ?>" placeholder="Cost">
-                                        <input type="text" name="extras[<?php echo $index; ?>][value]" value="<?php echo htmlspecialchars($extra['value']); ?>" placeholder="Value">
+                                        <input type="text" name="extras[<?php echo $index; ?>][label]" value="<?php echo htmlspecialchars($extra['label']); ?>" placeholder="Label" required>
+                                        <input type="number" name="extras[<?php echo $index; ?>][cost]" value="<?php echo $extra['cost']; ?>" placeholder="Cost" required>
+                                        <input type="text" name="extras[<?php echo $index; ?>][value]" value="<?php echo htmlspecialchars($extra['value']); ?>" placeholder="Value" required>
                                     </div>
                                 </div>
                                 <?php endforeach; ?>
@@ -859,21 +930,21 @@ if (file_exists('brief_config.json')) {
                             <div class="space-y-4">
                                 <div class="config-item">
                                     <label class="block text-sm font-medium text-slate-700 mb-2">Low Complexity (1-4 features)</label>
-                                    <input type="text" name="timeframes[low]" value="<?php echo htmlspecialchars($config['timeframes']['low']); ?>" class="w-full border border-slate-200 rounded-lg p-3">
+                                    <input type="text" name="timeframes[low]" value="<?php echo htmlspecialchars($config['timeframes']['low']); ?>" class="timeframe-input" placeholder="e.g. 3 Days" required>
                                 </div>
                                 <div class="config-item">
                                     <label class="block text-sm font-medium text-slate-700 mb-2">Medium Complexity (5-8 features)</label>
-                                    <input type="text" name="timeframes[medium]" value="<?php echo htmlspecialchars($config['timeframes']['medium']); ?>" class="w-full border border-slate-200 rounded-lg p-3">
+                                    <input type="text" name="timeframes[medium]" value="<?php echo htmlspecialchars($config['timeframes']['medium']); ?>" class="timeframe-input" placeholder="e.g. 7 Days" required>
                                 </div>
                                 <div class="config-item">
                                     <label class="block text-sm font-medium text-slate-700 mb-2">High Complexity (9+ features)</label>
-                                    <input type="text" name="timeframes[high]" value="<?php echo htmlspecialchars($config['timeframes']['high']); ?>" class="w-full border border-slate-200 rounded-lg p-3">
+                                    <input type="text" name="timeframes[high]" value="<?php echo htmlspecialchars($config['timeframes']['high']); ?>" class="timeframe-input" placeholder="e.g. 2 Weeks" required>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Hidden inputs for JSON data -->
-                        <input type="hidden" name="sections" id="sections-input">
+                        <input type="hidden" name="sections" id="sections-input" value='<?php echo json_encode($config['sections']); ?>'>
                         <input type="hidden" name="platforms" id="platforms-input">
                         <input type="hidden" name="features" id="features-input">
                         <input type="hidden" name="extras" id="extras-input">
@@ -915,9 +986,9 @@ if (file_exists('brief_config.json')) {
                         <button type="button" class="remove-btn" onclick="removeItem(this, 'platforms')"><i class="fa-regular fa-trash-can"></i></button>
                     </div>
                     <div class="item-row">
-                        <input type="text" name="platforms[${index}][label]" placeholder="Label (e.g. Web App)">
-                        <input type="number" name="platforms[${index}][cost]" placeholder="Cost">
-                        <input type="text" name="platforms[${index}][value]" placeholder="Value">
+                        <input type="text" name="platforms[${index}][label]" placeholder="Label (e.g. Web)" required>
+                        <input type="number" name="platforms[${index}][cost]" placeholder="Cost" required>
+                        <input type="text" name="platforms[${index}][value]" placeholder="Value (e.g. Web)" required>
                     </div>
                 </div>
             `;
@@ -934,9 +1005,9 @@ if (file_exists('brief_config.json')) {
                         <button type="button" class="remove-btn" onclick="removeItem(this, 'features')"><i class="fa-regular fa-trash-can"></i></button>
                     </div>
                     <div class="item-row">
-                        <input type="text" name="features[${index}][label]" placeholder="Label">
-                        <input type="number" name="features[${index}][cost]" placeholder="Cost">
-                        <input type="text" name="features[${index}][value]" placeholder="Value">
+                        <input type="text" name="features[${index}][label]" placeholder="Label" required>
+                        <input type="number" name="features[${index}][cost]" placeholder="Cost" required>
+                        <input type="text" name="features[${index}][value]" placeholder="Value" required>
                     </div>
                 </div>
             `;
@@ -953,9 +1024,9 @@ if (file_exists('brief_config.json')) {
                         <button type="button" class="remove-btn" onclick="removeItem(this, 'extras')"><i class="fa-regular fa-trash-can"></i></button>
                     </div>
                     <div class="item-row">
-                        <input type="text" name="extras[${index}][label]" placeholder="Label">
-                        <input type="number" name="extras[${index}][cost]" placeholder="Cost">
-                        <input type="text" name="extras[${index}][value]" placeholder="Value">
+                        <input type="text" name="extras[${index}][label]" placeholder="Label" required>
+                        <input type="number" name="extras[${index}][cost]" placeholder="Cost" required>
+                        <input type="text" name="extras[${index}][value]" placeholder="Value" required>
                     </div>
                 </div>
             `;
@@ -973,7 +1044,7 @@ if (file_exists('brief_config.json')) {
             // Gather platforms
             const platforms = [];
             document.querySelectorAll('#platforms-container .config-item').forEach(item => {
-                const inputs = item.querySelectorAll('input');
+                const inputs = item.querySelectorAll('input[type="text"], input[type="number"]');
                 platforms.push({
                     label: inputs[0].value,
                     cost: parseInt(inputs[1].value) || 0,
@@ -985,7 +1056,7 @@ if (file_exists('brief_config.json')) {
             // Gather features
             const features = [];
             document.querySelectorAll('#features-container .config-item').forEach(item => {
-                const inputs = item.querySelectorAll('input');
+                const inputs = item.querySelectorAll('input[type="text"], input[type="number"]');
                 features.push({
                     label: inputs[0].value,
                     cost: parseInt(inputs[1].value) || 0,
@@ -997,7 +1068,7 @@ if (file_exists('brief_config.json')) {
             // Gather extras
             const extras = [];
             document.querySelectorAll('#extras-container .config-item').forEach(item => {
-                const inputs = item.querySelectorAll('input');
+                const inputs = item.querySelectorAll('input[type="text"], input[type="number"]');
                 extras.push({
                     label: inputs[0].value,
                     cost: parseInt(inputs[1].value) || 0,
